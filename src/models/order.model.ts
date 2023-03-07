@@ -42,6 +42,26 @@ export class Order extends Entity {
   @hasMany(() => Dish, {through: {model: () => OrderDishes}})
   dishes: Dish[];
 
+  @property({
+    type: 'number',
+    required: true,
+    postgresql: {
+      columnName: 'customer_id',
+      dataType: 'integer',
+    },
+  })
+  customerId: number;
+
+  @property({
+    type: 'number',
+    required: true,
+    postgresql: {
+      columnName: 'employee_id',
+      dataType: 'integer',
+    },
+  })
+  employeeId: number;
+
   constructor(data?: Partial<Order>) {
     super(data);
   }

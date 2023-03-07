@@ -19,19 +19,25 @@ import {
 } from '@loopback/rest';
 import moment from 'moment';
 import {Dish, OrderRequest} from '../models';
-import {Order} from './../models/order.model';
-import {DishRepository} from './../repositories/dish.repository';
-import {OrderDishesRepository} from './../repositories/order-dishes.repository';
-import {OrderRepository} from './../repositories/order.repository';
-
+import {Order} from '../models/order.model';
+import {CustomerRepository} from '../repositories/customer.repository';
+import {DishRepository} from '../repositories/dish.repository';
+import {OrderDishesRepository} from '../repositories/order-dishes.repository';
+import {OrderRepository} from '../repositories/order.repository';
+import {EmployeeRepository} from './../repositories/employee.repository';
 export class OrderController {
+  CustomerRepository: any;
   constructor(
     @repository(OrderRepository)
     public orderRepository: OrderRepository,
     @repository(OrderDishesRepository)
     public orderDishesRepository: OrderDishesRepository,
     @repository(DishRepository)
-    public DishRepository: DishRepository,
+    public dishRepository: DishRepository,
+    @repository(CustomerRepository)
+    public customerRepository: CustomerRepository,
+    @repository(EmployeeRepository)
+    public employeeRepository: EmployeeRepository,
   ) {}
 
   @post('/orders')
@@ -54,10 +60,11 @@ export class OrderController {
     // req: Omit<OrderRequest, 'id'>,
   ): Promise<Order> {
     const {dishList, ...order} = req;
-
+    const checkOrder = await this.customerRepository.findById(order.customerId);
+    const checkEmp = await this.employeeRepository.findById(order.employeeId);
     let totalBill = 0;
     for (let item of dishList) {
-      const dish: Dish = await this.DishRepository.findById(item.dishId);
+      const dish: Dish = await this.dishRepository.findById(item.dishId);
       totalBill += dish.price * item.quantity;
     }
     order.createdOn = moment().toISOString();
@@ -65,7 +72,7 @@ export class OrderController {
 
     const newOrder = await this.orderRepository.create(order);
     for (let item of dishList) {
-      const dish: Dish = await this.DishRepository.findById(item.dishId);
+      const dish: Dish = await this.dishRepository.findById(item.dishId);
       this.orderDishesRepository.create({
         orderId: newOrder.id,
         dishId: item.dishId,
@@ -152,22 +159,24 @@ export class OrderController {
       },
     })
     req: OrderRequest,
-  ): Promise<Order> {
-    const deleteOrders = await this.deleteById(id);
-
+  ): Promise<any> {
     const {dishList, ...order} = req;
-
+    const checkCustomer = await this.customerRepository.findById(
+      order.customerId,
+    );
+    const checkEmp = await this.employeeRepository.findById(order.employeeId);
     let totalBill = 0;
     for (let item of dishList) {
-      const dish: Dish = await this.DishRepository.findById(item.dishId);
+      const dish: Dish = await this.dishRepository.findById(item.dishId);
       totalBill += dish.price * item.quantity;
     }
+    const deleteOrders = await this.deleteById(id);
     order.createdOn = moment().toISOString();
     order.totalBill = totalBill;
 
     const newOrder = await this.orderRepository.create(order);
     for (let item of dishList) {
-      const dish: Dish = await this.DishRepository.findById(item.dishId);
+      const dish: Dish = await this.dishRepository.findById(item.dishId);
       this.orderDishesRepository.create({
         orderId: newOrder.id,
         dishId: item.dishId,
