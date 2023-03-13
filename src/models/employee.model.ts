@@ -1,4 +1,10 @@
-import {Entity, hasMany, hasOne, model, property} from '@loopback/repository';
+import {
+  belongsTo,
+  Entity,
+  hasMany,
+  model,
+  property,
+} from '@loopback/repository';
 import {Order} from './order.model';
 import {User} from './user.model';
 
@@ -38,22 +44,11 @@ export class Employee extends Entity {
     },
   })
   status: boolean;
-
-  @property({
-    type: 'number',
-    required: true,
-    postgresql: {
-      columnName: 'user_id',
-      datatype: 'integer',
-    },
-  })
-  userId: number;
-
   @hasMany(() => Order)
   orders: Order[];
 
-  @hasOne(() => User)
-  user: User;
+  @belongsTo(() => User, {keyFrom: 'userId'}, {name: 'user_id'})
+  userId: number;
 
   constructor(data?: Partial<Employee>) {
     super(data);
@@ -65,3 +60,40 @@ export interface EmployeeRelations {
 }
 
 export type EmployeeWithRelations = Employee & EmployeeRelations;
+@model()
+export class UserRequest {
+  @property({
+    type: 'string',
+    required: true,
+    postgresql: {
+      columnName: 'user_name',
+      datatype: 'character varying',
+    },
+    index: {
+      unique: true,
+    },
+  })
+  username: string;
+
+  @property({
+    type: 'string',
+    required: true,
+    postgresql: {
+      columnName: 'password',
+      datatype: 'character varying',
+    },
+    jsonSchema: {
+      maxLength: 16,
+      minLength: 4,
+    },
+  })
+  pwd: string;
+}
+@model()
+export class EmployeeRequest extends Employee {
+  @property({
+    type: 'object',
+    itemType: User,
+  })
+  user: User;
+}

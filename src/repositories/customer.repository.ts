@@ -1,5 +1,9 @@
 import {Getter, inject} from '@loopback/core';
-import {DefaultCrudRepository, repository, HasManyRepositoryFactory} from '@loopback/repository';
+import {
+  DefaultCrudRepository,
+  HasManyRepositoryFactory,
+  repository,
+} from '@loopback/repository';
 import {DbDataSource} from '../datasources';
 import {Customer, CustomerRelations, Order} from '../models';
 import {OrderRepository} from './order.repository';
@@ -9,8 +13,10 @@ export class CustomerRepository extends DefaultCrudRepository<
   typeof Customer.prototype.id,
   CustomerRelations
 > {
-
-  public readonly orders: HasManyRepositoryFactory<Order, typeof Customer.prototype.id>;
+  public readonly orders: HasManyRepositoryFactory<
+    Order,
+    typeof Customer.prototype.id
+  >;
 
   constructor(
     @inject('datasources.db') dataSource: DbDataSource,
@@ -18,7 +24,10 @@ export class CustomerRepository extends DefaultCrudRepository<
     protected orderRepositoryGetter: Getter<OrderRepository>,
   ) {
     super(Customer, dataSource);
-    this.orders = this.createHasManyRepositoryFactoryFor('orders', orderRepositoryGetter,);
+    this.orders = this.createHasManyRepositoryFactoryFor(
+      'orders',
+      orderRepositoryGetter,
+    );
     this.registerInclusionResolver('orders', this.orders.inclusionResolver);
   }
 }

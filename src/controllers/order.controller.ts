@@ -215,4 +215,156 @@ export class OrderController {
     }
     await this.orderRepository.deleteById(id);
   }
+
+  @get('/orders/features/countOrder')
+  @response(200, {
+    description: 'Array of Order model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Order, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async countOrder(
+    @param.query.string('date') date: string,
+  ): Promise<number | string> {
+    if (date) {
+      let startOfDate = date + ' 00:00:00';
+      let endOfDate = date + ' 23:59:59';
+      let query = await this.orderRepository.execute(`
+      SELECT count(order_id) as count
+      from Orders
+      where created_on >= '${startOfDate}' and created_on <= '${endOfDate}'
+      `);
+      return query[0].count;
+    } else {
+      return `Query param is not valid`;
+    }
+  }
+
+  @get('/orders/features/getProfitOneDay')
+  @response(200, {
+    description: 'Array of Order model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Order, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async findProfitOneDay(
+    @param.query.string('date') date: string,
+  ): Promise<number | string> {
+    if (date) {
+      let startOfDate = date + ' 00:00:00';
+      let endOfDate = date + ' 23:59:59';
+      let checkDateHaveOrders = await this.orderRepository.execute(`
+      SELECT * from orders where  created_on >= '${startOfDate}' and created_on <= '${endOfDate}'
+      `);
+      if (checkDateHaveOrders.length > 0) {
+        let query = await this.orderRepository.execute(`
+        SELECT sum(total_bill) as profit
+        from Orders
+        where created_on >= '${startOfDate}' and created_on <= '${endOfDate}'
+
+        `);
+
+        return query[0].profit;
+      } else {
+        return `No orders in ${date}`;
+      }
+    } else {
+      return `Query param is not valid`;
+    }
+  }
+
+  @get('/orders/features/mostvaluableorder')
+  @response(200, {
+    description: 'Array of Order model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Order, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async findMostValuableOrder(
+    @param.query.string('date') date: string,
+  ): Promise<number | string> {
+    if (date) {
+      let startOfDate = date + ' 00:00:00';
+      let endOfDate = date + ' 23:59:59';
+      let checkDateHaveOrders = await this.orderRepository.execute(`
+      SELECT * from orders where  created_on >= '${startOfDate}' and created_on <= '${endOfDate}'
+      `);
+      if (checkDateHaveOrders.length > 0) {
+        let query = await this.orderRepository.execute(`
+        SELECT O.order_id, O.total_bill, sum(dish_quantity)
+        FROM Orders O join order_dishes M ON O.order_id = M.order_id
+        where O.created_on >= '${startOfDate}' and O.created_on <= '${endOfDate}'
+        group by O.order_id
+        order by  O.total_bill desc
+        limit 1;
+
+
+        `);
+
+        return query[0];
+      } else {
+        return `No orders in ${date}`;
+      }
+    } else {
+      return `Query param is not valid`;
+    }
+  }
+
+  @get('/orders/features/getProfitBetweenDate')
+  @response(200, {
+    description: 'Array of Order model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Order, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async findProfitBetweenDate(
+    @param.query.string('startDate') startDate: string,
+    @param.query.string('endDate') endDate: string,
+  ): Promise<any[] | string> {
+    if (startDate != null && endDate != null) {
+      let startOfDate = startDate + ' 00:00:00';
+      let endOfDate = endDate + ' 23:59:59';
+      console.log('checkHaveOrders in findprofitbetweendate');
+      console.log(startOfDate);
+      console.log(endOfDate);
+      let checkDateHaveOrders = await this.orderRepository.execute(`
+      SELECT * from orders where created_on >= '${startOfDate}' and created_on <= '${endOfDate}'
+      `);
+      if (checkDateHaveOrders.length > 0) {
+        console.log('query in findprofitbetweendate');
+        let query: any = await this.orderRepository.execute(`
+        SELECT to_char(orders.created_on, 'DD/MM/YYYY') as Date, sum(orders.total_bill) as profit
+        from orders
+        where orders.created_on >= '${startOfDate}'  and orders.created_on <= '${endOfDate}'
+        group by Date;
+        `);
+
+        return query;
+      } else {
+        return `No orders between ${startDate} and ${endDate}`;
+      }
+    } else {
+      return `Query param is not valid`;
+    }
+  }
 }

@@ -23,7 +23,7 @@ if (require.main === module) {
       // The `gracePeriodForClose` provides a graceful close for http/https
       // servers with keep-alive clients. The default value is `Infinity`
       // (don't force-close). If you want to immediately destroy all sockets
-      // upon stop, set its value to `0`.
+      // upon stop, set its value ato `0`.
       // See https://www.npmjs.com/package/stoppable
       gracePeriodForClose: 5000, // 5 seconds
       openApiSpec: {

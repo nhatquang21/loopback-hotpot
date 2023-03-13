@@ -8,9 +8,7 @@ export class DishRepository extends DefaultCrudRepository<
   typeof Dish.prototype.id,
   DishRelations
 > {
-  constructor(
-    @inject('datasources.db') dataSource: DbDataSource,
-  ) {
+  constructor(@inject('datasources.db') dataSource: DbDataSource) {
     super(Dish, dataSource);
   }
 }

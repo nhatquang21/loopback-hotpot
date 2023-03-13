@@ -57,6 +57,7 @@
     "@loopback/rest-explorer": "^5.0.8",
     "@loopback/service-proxy": "^5.0.8",
     "bcrypt": "^5.1.0",
+    "lodash": "^4.17.21",
     "loopback-connector-postgresql": "^5.5.2",
     "moment": "^2.29.4",
     "nodemon": "^2.0.20",
