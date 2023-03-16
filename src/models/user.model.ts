@@ -15,7 +15,7 @@ export class User extends Entity {
       datatype: 'integer',
     },
   })
-  id?: number;
+  id: number;
 
   @property({
     type: 'string',

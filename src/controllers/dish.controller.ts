@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -29,6 +30,7 @@ export class DishController {
     public orderDishesRepository: OrderDishesRepository,
   ) {}
 
+  @authenticate('jwt')
   @post('/dishes')
   @response(200, {
     description: 'Dish model instance',
@@ -75,24 +77,25 @@ export class DishController {
     return this.dishRepository.find(filter);
   }
 
-  @patch('/dishes')
-  @response(200, {
-    description: 'Dish PATCH success count',
-    content: {'application/json': {schema: CountSchema}},
-  })
-  async updateAll(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Dish, {partial: true}),
-        },
-      },
-    })
-    dish: Dish,
-    @param.where(Dish) where?: Where<Dish>,
-  ): Promise<Count> {
-    return this.dishRepository.updateAll(dish, where);
-  }
+  // @authenticate('jwt')
+  // @patch('/dishes')
+  // @response(200, {
+  //   description: 'Dish PATCH success count',
+  //   content: {'application/json': {schema: CountSchema}},
+  // })
+  // async updateAll(
+  //   @requestBody({
+  //     content: {
+  //       'application/json': {
+  //         schema: getModelSchemaRef(Dish, {partial: true}),
+  //       },
+  //     },
+  //   })
+  //   dish: Dish,
+  //   @param.where(Dish) where?: Where<Dish>,
+  // ): Promise<Count> {
+  //   return this.dishRepository.updateAll(dish, where);
+  // }
 
   @get('/dishes/{id}')
   @response(200, {
@@ -110,6 +113,7 @@ export class DishController {
     return this.dishRepository.findById(id, filter);
   }
 
+  @authenticate('jwt')
   @patch('/dishes/{id}')
   @response(204, {
     description: 'Dish PATCH success',
@@ -128,6 +132,7 @@ export class DishController {
     await this.dishRepository.updateById(id, dish);
   }
 
+  @authenticate('jwt')
   @put('/dishes/{id}')
   @response(204, {
     description: 'Dish PUT success',
@@ -139,6 +144,7 @@ export class DishController {
     await this.dishRepository.replaceById(id, dish);
   }
 
+  @authenticate('jwt')
   @del('/dishes/{id}')
   @response(204, {
     description: 'Dish DELETE success',

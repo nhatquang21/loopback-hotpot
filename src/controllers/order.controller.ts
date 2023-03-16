@@ -1,3 +1,5 @@
+import {authenticate} from '@loopback/authentication/dist/decorators/authenticate.decorator';
+import {inject} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -17,6 +19,7 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
+import {SecurityBindings} from '@loopback/security';
 import moment from 'moment';
 import {Dish, OrderRequest} from '../models';
 import {Order} from '../models/order.model';
@@ -24,7 +27,10 @@ import {CustomerRepository} from '../repositories/customer.repository';
 import {DishRepository} from '../repositories/dish.repository';
 import {OrderDishesRepository} from '../repositories/order-dishes.repository';
 import {OrderRepository} from '../repositories/order.repository';
+import {MyUserProfile} from '../services/jwt.service';
 import {EmployeeRepository} from './../repositories/employee.repository';
+
+@authenticate('jwt')
 export class OrderController {
   CustomerRepository: any;
   constructor(
@@ -105,8 +111,46 @@ export class OrderController {
       },
     },
   })
-  async find(@param.filter(Order) filter?: Filter<Order>): Promise<Order[]> {
+  async find(
+    //GET CURRENT USER PROFILE
+
+    @param.filter(Order) filter?: Filter<Order>,
+  ): Promise<Order[]> {
     return this.orderRepository.find(filter);
+  }
+
+  @get('/orders/byEmployee')
+  @response(200, {
+    description: 'Array of Order model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Order, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async findOrderEmployee(
+    //GET CURRENT USER PROFILE
+
+    @inject(SecurityBindings.USER)
+    currentUserProfile: MyUserProfile,
+    @param.filter(Order) filter?: Filter<Order>,
+  ): Promise<Order[]> {
+    console.log(currentUserProfile);
+    let userId = currentUserProfile.user_id;
+    let employee = await this.employeeRepository.findOne({
+      where: {userId: userId},
+    });
+
+    if (!employee) {
+      return this.orderRepository.find(filter);
+    } else {
+      let employeeID = employee.id;
+      filter = {where: {employeeId: employeeID}};
+      return this.orderRepository.find(filter);
+    }
   }
 
   @patch('/orders')
@@ -366,5 +410,28 @@ export class OrderController {
     } else {
       return `Query param is not valid`;
     }
+  }
+
+  @authenticate('jwt')
+  @get('/whoAmI', {
+    responses: {
+      '200': {
+        description: 'Return current user',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'string',
+            },
+          },
+        },
+      },
+    },
+  })
+  async whoAmI(
+    @inject(SecurityBindings.USER)
+    currentUserProfile: MyUserProfile,
+  ) {
+    console.log('CURRENT USER: ', currentUserProfile);
+    return currentUserProfile;
   }
 }

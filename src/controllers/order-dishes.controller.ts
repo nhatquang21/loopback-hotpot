@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication/dist/decorators/authenticate.decorator';
 import {
   Count,
   CountSchema,
@@ -20,6 +21,7 @@ import {
 import {OrderDishes} from '../models';
 import {OrderDishesRepository} from '../repositories';
 
+@authenticate('jwt')
 export class OrderDishesController {
   constructor(
     @repository(OrderDishesRepository)
