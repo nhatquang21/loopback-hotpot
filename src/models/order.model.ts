@@ -1,5 +1,7 @@
-import {Entity, hasMany, model, property} from '@loopback/repository';
+import {Entity, hasMany, hasOne, model, property} from '@loopback/repository';
+import {Customer} from './customer.model';
 import {Dish} from './dish.model';
+import {Employee} from './employee.model';
 import {OrderDishes} from './order-dishes.model';
 
 @model({
@@ -39,8 +41,24 @@ export class Order extends Entity {
   })
   createdOn: string;
 
+  @property({
+    type: 'number',
+    required: true,
+    postgresql: {
+      columnName: 'employee_id',
+      dataType: 'integer',
+    },
+  })
+  employeeId: number;
+
   @hasMany(() => Dish, {through: {model: () => OrderDishes}})
   dishes: Dish[];
+
+  @hasOne(() => Employee, {
+    keyFrom: 'employeeId',
+    keyTo: 'id',
+  })
+  employee: Employee;
 
   @property({
     type: 'number',
@@ -52,15 +70,11 @@ export class Order extends Entity {
   })
   customerId: number;
 
-  @property({
-    type: 'number',
-    required: true,
-    postgresql: {
-      columnName: 'employee_id',
-      dataType: 'integer',
-    },
+  @hasOne(() => Customer, {
+    keyFrom: 'customerId',
+    keyTo: 'id',
   })
-  employeeId: number;
+  customer: Customer;
 
   constructor(data?: Partial<Order>) {
     super(data);

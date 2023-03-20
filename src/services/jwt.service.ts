@@ -56,7 +56,7 @@ export class CustomJWTService implements TokenService {
       },
       privateKey,
       {
-        expiresIn: '30m',
+        expiresIn: '1h',
       },
     );
     return token;

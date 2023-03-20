@@ -10,7 +10,148 @@
 			"name": "/employees",
 			"item": [
 				{
-					"name": "Get emps",
+					"name": "Get emps filter with name",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://[::1]:3000/employees?filter={\"where\": {\"name\": \"Jason Trần\"}}",
+							"protocol": "http",
+							"host": [
+								"[::1]"
+							],
+							"port": "3000",
+							"path": [
+								"employees"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\"where\": {\"name\": \"Jason Trần\"}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get emps with status",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://[::1]:3000/employees?filter={\"where\": {\"status\": true}}",
+							"protocol": "http",
+							"host": [
+								"[::1]"
+							],
+							"port": "3000",
+							"path": [
+								"employees"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\"where\": {\"status\": true}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get emps filter with name,status",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://[::1]:3000/employees?filter={\"where\": {\"name\": \"Quang\", \"status\": true}}",
+							"protocol": "http",
+							"host": [
+								"[::1]"
+							],
+							"port": "3000",
+							"path": [
+								"employees"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\"where\": {\"name\": \"Quang\", \"status\": true}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all emps",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -176,6 +317,16 @@
 				{
 					"name": "Delete dish",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "DELETE",
 						"header": [],
 						"body": {
@@ -188,7 +339,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://[::1]:3000/dishes/27/",
+							"raw": "http://[::1]:3000/dishes/30/",
 							"protocol": "http",
 							"host": [
 								"[::1]"
@@ -196,7 +347,7 @@
 							"port": "3000",
 							"path": [
 								"dishes",
-								"27",
+								"30",
 								""
 							]
 						}
@@ -338,6 +489,251 @@
 						"method": "GET",
 						"header": [],
 						"url": {
+							"raw": "http://[::1]:3000/dishes?filter={\"include\":[\"orders\"]}",
+							"protocol": "http",
+							"host": [
+								"[::1]"
+							],
+							"port": "3000",
+							"path": [
+								"dishes"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\"include\":[\"orders\"]}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get dishes Copy",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjciLCJpYXQiOjE2Nzg4NTUwMTUsImV4cCI6MTY3ODg3NjYxNX0.DOYvvCsJm_MenDS7B5qpYlkKja5ChHKQhO6T5aLMUzw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://[::1]:3000/dishes?filter={\"include\": [\"orders\"]}",
+							"protocol": "http",
+							"host": [
+								"[::1]"
+							],
+							"port": "3000",
+							"path": [
+								"dishes"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\"include\": [\"orders\"]}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get dishes with name like and price lt",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjciLCJpYXQiOjE2Nzg4NTUwMTUsImV4cCI6MTY3ODg3NjYxNX0.DOYvvCsJm_MenDS7B5qpYlkKja5ChHKQhO6T5aLMUzw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://[::1]:3000/dishes?filter={\n  \"where\": {\n    \"name\": {\n      \"ilike\": \"r%25\"\n    }\n  }\n}",
+							"protocol": "http",
+							"host": [
+								"[::1]"
+							],
+							"port": "3000",
+							"path": [
+								"dishes"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\n  \"where\": {\n    \"name\": {\n      \"ilike\": \"r%25\"\n    }\n  }\n}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get dishes with name ilike",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjciLCJpYXQiOjE2Nzg4NTUwMTUsImV4cCI6MTY3ODg3NjYxNX0.DOYvvCsJm_MenDS7B5qpYlkKja5ChHKQhO6T5aLMUzw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://[::1]:3000/dishes?filter={\"where\": {\"and\": [{\"name\":\"rau\"},{\"price\":{\"lt\": 20000}]}}",
+							"protocol": "http",
+							"host": [
+								"[::1]"
+							],
+							"port": "3000",
+							"path": [
+								"dishes"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\"where\": {\"and\": [{\"name\":\"rau\"},{\"price\":{\"lt\": 20000}]}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get dishes filter by name not equal",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjciLCJpYXQiOjE2Nzg4NTUwMTUsImV4cCI6MTY3ODg3NjYxNX0.DOYvvCsJm_MenDS7B5qpYlkKja5ChHKQhO6T5aLMUzw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://[::1]:3000/dishes?filter={\"where\": {\"name\": {\"eq\":\"rau\"}}}",
+							"protocol": "http",
+							"host": [
+								"[::1]"
+							],
+							"port": "3000",
+							"path": [
+								"dishes"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\"where\": {\"name\": {\"eq\":\"rau\"}}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get dishes filter by name",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjciLCJpYXQiOjE2Nzg4NTUwMTUsImV4cCI6MTY3ODg3NjYxNX0.DOYvvCsJm_MenDS7B5qpYlkKja5ChHKQhO6T5aLMUzw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://[::1]:3000/dishes?filter={\"where\": {\"name\": {\"neq\":\"rau\"}}}",
+							"protocol": "http",
+							"host": [
+								"[::1]"
+							],
+							"port": "3000",
+							"path": [
+								"dishes"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\"where\": {\"name\": {\"neq\":\"rau\"}}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get dish with price greater than filter",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjciLCJpYXQiOjE2Nzg4NTUwMTUsImV4cCI6MTY3ODg3NjYxNX0.DOYvvCsJm_MenDS7B5qpYlkKja5ChHKQhO6T5aLMUzw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://[::1]:3000/dishes?filter={\"where\": {\"price\" :{\"lt\": 100000}}}",
+							"protocol": "http",
+							"host": [
+								"[::1]"
+							],
+							"port": "3000",
+							"path": [
+								"dishes"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\"where\": {\"price\" :{\"lt\": 100000}}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get dish with price less than filter Copy",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjciLCJpYXQiOjE2Nzg4NTUwMTUsImV4cCI6MTY3ODg3NjYxNX0.DOYvvCsJm_MenDS7B5qpYlkKja5ChHKQhO6T5aLMUzw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
 							"raw": "http://[::1]:3000/dishes",
 							"protocol": "http",
 							"host": [
@@ -354,11 +750,21 @@
 				{
 					"name": "Add dish",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n \n    \"name\": \"edidejidje\",\n    \"price\": 20000\n}",
+							"raw": "{\n \n    \"name\": \"Kẹo Thailand\",\n    \"price\": 20000\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -418,6 +824,16 @@
 				{
 					"name": "Get orderdishes",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -500,6 +916,16 @@
 				{
 					"name": "Get orders",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -512,6 +938,76 @@
 							"path": [
 								"orders",
 								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get orders with include",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://[::1]:3000/orders?filter={\"include\": [\"employee\", \"dishes\", \"customer\"], \"where\": {\"totalBill\": {\"gt\": 1000000}}, \"limit\": 5, \"order\": [\"totalBill ASC\"]}",
+							"protocol": "http",
+							"host": [
+								"[::1]"
+							],
+							"port": "3000",
+							"path": [
+								"orders"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\"include\": [\"employee\", \"dishes\", \"customer\"], \"where\": {\"totalBill\": {\"gt\": 1000000}}, \"limit\": 5, \"order\": [\"totalBill ASC\"]}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get orders date less than ...",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://[::1]:3000/orders?filter={\"where\": {\"createdOn\":{\"lt\": \"2023-03-07T00:00:00.000Z\"}}}",
+							"protocol": "http",
+							"host": [
+								"[::1]"
+							],
+							"port": "3000",
+							"path": [
+								"orders"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "{\"where\": {\"createdOn\":{\"lt\": \"2023-03-07T00:00:00.000Z\"}}}"
+								}
 							]
 						}
 					},
@@ -867,14 +1363,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://[::1]:3000/users",
+							"raw": "http://[::1]:3000/whoAmI",
 							"protocol": "http",
 							"host": [
 								"[::1]"
 							],
 							"port": "3000",
 							"path": [
-								"users"
+								"whoAmI"
 							]
 						}
 					},
@@ -896,7 +1392,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://[::1]:3000/users/1",
+							"raw": "http://[::1]:3000/users/38",
 							"protocol": "http",
 							"host": [
 								"[::1]"
@@ -904,7 +1400,7 @@
 							"port": "3000",
 							"path": [
 								"users",
-								"1"
+								"38"
 							]
 						}
 					},
@@ -927,7 +1423,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n   \n    \"pwd\": \"1234\"\n\n  \n}",
+							"raw": "{\n   \n    \"pwd\": \"1234\",\n    \"roleId\": 3\n  \n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -935,7 +1431,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://[::1]:3000/users/1",
+							"raw": "http://[::1]:3000/users/37",
 							"protocol": "http",
 							"host": [
 								"[::1]"
@@ -943,7 +1439,7 @@
 							"port": "3000",
 							"path": [
 								"users",
-								"1"
+								"37"
 							]
 						}
 					},
@@ -966,7 +1462,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\": \"jason3\",\n    \"pwd\": \"1234\"\n  \n}",
+							"raw": "{\n    \"username\": \"jason4\",\n    \"pwd\": \"hihihaha123\"\n  \n}",
 							"options": {
 								"raw": {
 									"language": "json"

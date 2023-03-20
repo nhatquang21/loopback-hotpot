@@ -2,12 +2,15 @@ import {Getter, inject} from '@loopback/core';
 import {
   DefaultCrudRepository,
   HasManyThroughRepositoryFactory,
+  HasOneRepositoryFactory,
   repository,
 } from '@loopback/repository';
 import {DbDataSource} from '../datasources';
-import {Dish, Order, OrderDishes, OrderRelations} from '../models';
+import {Customer, Dish, Order, OrderDishes, OrderRelations} from '../models';
+import {Employee} from './../models/employee.model';
 import {CustomerRepository} from './customer.repository';
 import {DishRepository} from './dish.repository';
+import {EmployeeRepository} from './employee.repository';
 import {OrderDishesRepository} from './order-dishes.repository';
 
 export class OrderRepository extends DefaultCrudRepository<
@@ -22,12 +25,23 @@ export class OrderRepository extends DefaultCrudRepository<
     typeof Order.prototype.id
   >;
 
+  public readonly employee: HasOneRepositoryFactory<
+    Employee,
+    typeof Employee.prototype.id
+  >;
+  public readonly customer: HasOneRepositoryFactory<
+    Customer,
+    typeof Customer.prototype.id
+  >;
+
   constructor(
     @inject('datasources.db') dataSource: DbDataSource,
     @repository.getter('OrderDishesRepository')
     protected orderDishesRepositoryGetter: Getter<OrderDishesRepository>,
     @repository.getter('DishRepository')
     protected dishRepositoryGetter: Getter<DishRepository>,
+    @repository.getter('EmployeeRepository')
+    protected employeeRepositoryGetter: Getter<EmployeeRepository>,
     @repository.getter('CustomerRepository')
     protected customerRepositoryGetter: Getter<CustomerRepository>,
   ) {
@@ -39,5 +53,17 @@ export class OrderRepository extends DefaultCrudRepository<
       orderDishesRepositoryGetter,
     );
     this.registerInclusionResolver('dishes', this.dishes.inclusionResolver);
+
+    this.employee = this.createHasOneRepositoryFactoryFor(
+      'employee',
+      employeeRepositoryGetter,
+    );
+    this.registerInclusionResolver('employee', this.employee.inclusionResolver);
+
+    this.customer = this.createHasOneRepositoryFactoryFor(
+      'customer',
+      customerRepositoryGetter,
+    );
+    this.registerInclusionResolver('customer', this.customer.inclusionResolver);
   }
 }
