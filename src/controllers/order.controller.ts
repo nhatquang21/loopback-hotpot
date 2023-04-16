@@ -1,4 +1,5 @@
 import {authenticate} from '@loopback/authentication/dist/decorators/authenticate.decorator';
+import {authorize} from '@loopback/authorization';
 import {inject} from '@loopback/core';
 import {
   Count,
@@ -30,7 +31,7 @@ import {OrderRepository} from '../repositories/order.repository';
 import {MyUserProfile} from '../services/jwt.service';
 import {EmployeeRepository} from './../repositories/employee.repository';
 
-@authenticate('jwt')
+// @authenticate('jwt')
 export class OrderController {
   CustomerRepository: any;
   constructor(
@@ -111,6 +112,9 @@ export class OrderController {
       },
     },
   })
+  // @authorize({
+  //   allowedRoles: ['ADMIN', 'Employees'],
+  // })
   async find(
     //GET CURRENT USER PROFILE
 
@@ -410,28 +414,5 @@ export class OrderController {
     } else {
       return `Query param is not valid`;
     }
-  }
-
-  @authenticate('jwt')
-  @get('/whoAmI', {
-    responses: {
-      '200': {
-        description: 'Return current user',
-        content: {
-          'application/json': {
-            schema: {
-              type: 'string',
-            },
-          },
-        },
-      },
-    },
-  })
-  async whoAmI(
-    @inject(SecurityBindings.USER)
-    currentUserProfile: MyUserProfile,
-  ) {
-    console.log('CURRENT USER: ', currentUserProfile);
-    return currentUserProfile;
   }
 }

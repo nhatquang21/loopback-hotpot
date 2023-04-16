@@ -1,10 +1,12 @@
+import {UserChangePwdRequest} from './../models/user.model';
+import {RoleRepository} from './../repositories/role.repository';
 import {
   TokenServiceBindings,
   UserServiceBindings,
 } from '@loopback/authentication-jwt';
 import {authenticate} from '@loopback/authentication/dist/decorators/authenticate.decorator';
 import {authorize} from '@loopback/authorization';
-import {inject} from '@loopback/core';
+import {Getter, inject} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -17,6 +19,7 @@ import {
   del,
   get,
   getModelSchemaRef,
+  HttpErrors,
   param,
   patch,
   post,
@@ -24,7 +27,7 @@ import {
   response,
   SchemaObject,
 } from '@loopback/rest';
-import {SecurityBindings} from '@loopback/security';
+import {SecurityBindings, UserProfile} from '@loopback/security';
 import moment from 'moment';
 import {User} from '../models';
 import {UserRepository} from '../repositories';
@@ -39,6 +42,14 @@ import {Credentials, CustomUserService} from './../services/user.service';
 //   })
 //   password: string;
 // }
+
+type ResponseUser = {
+  id?: number;
+  username?: string;
+  role?: string;
+  createdOn?: any;
+  token: string;
+};
 
 const CredentialsSchema: SchemaObject = {
   type: 'object',
@@ -74,7 +85,11 @@ export class UserController {
     public userService: CustomUserService,
     @inject(SecurityBindings.USER, {optional: true})
     public user: MyUserProfile,
+    @inject.getter(SecurityBindings.USER, {optional: true})
+    private readonly getCurrentUser: Getter<UserProfile>,
+
     @repository(UserRepository) protected userRepository: UserRepository,
+    @repository(RoleRepository) protected roleRepository: RoleRepository,
   ) {}
 
   @post('/users')
@@ -82,7 +97,7 @@ export class UserController {
     description: 'User model instance',
     content: {'application/json': {schema: getModelSchemaRef(User)}},
   })
-  @authorize({allowedRoles: ['ADMIN']})
+  // @authorize({allowedRoles: ['ADMIN']})
   async create(
     @requestBody({
       content: {
@@ -96,22 +111,18 @@ export class UserController {
     })
     user: Omit<User, 'id'>,
   ): Promise<any> {
-    try {
-      user.pwd = await this.bcrypt.hash(user.pwd, this.saltRounds);
-      user.createdOn = moment().toISOString();
+    user.pwd = await this.bcrypt.hash(user.pwd, this.saltRounds);
+    user.createdOn = moment().toISOString();
 
-      const checkUniqueUser = await this.find({
-        where: {username: user.username},
-      });
+    const checkUniqueUser = await this.find({
+      where: {username: user.username},
+    });
 
-      if (checkUniqueUser.length == 0) {
-        const savedUser = await this.userRepository.create(user);
-        return savedUser;
-      } else {
-        return 'Username has been used';
-      }
-    } catch (e) {
-      return e;
+    if (checkUniqueUser.length == 0) {
+      const savedUser = await this.userRepository.create(user);
+      return savedUser;
+    } else if (checkUniqueUser.length > 0) {
+      throw new HttpErrors[400]('User already exists');
     }
   }
 
@@ -136,7 +147,7 @@ export class UserController {
       },
     },
   })
-  @authorize({allowedRoles: ['ADMIN']})
+  // @authorize({allowedRoles: ['ADMIN']})
   async find(@param.filter(User) filter?: Filter<User>): Promise<User[]> {
     return this.userRepository.find(filter);
   }
@@ -166,8 +177,7 @@ export class UserController {
     description: 'User PATCH success',
   })
   @authorize({
-    allowedRoles: ['ADMIN', 'Employees'],
-    voters: [basicAuthorization],
+    allowedRoles: ['ADMIN'],
   })
   async updateById(
     @param.path.number('id') id: number,
@@ -180,75 +190,25 @@ export class UserController {
     })
     user: User,
   ): Promise<void> {
-    user.pwd = await this.bcrypt.hash(user.pwd, this.saltRounds);
-    user.updatedOn = moment().toISOString();
+    if (user.pwd) {
+      user.pwd = await this.bcrypt.hash(user.pwd, this.saltRounds);
+    }
+    console.log(user);
+
     await this.userRepository.updateById(id, user);
   }
-
-  // @put('/users/{id}')
-  // @response(204, {
-  //   description: 'User PUT success',
-  // })
-  // async replaceById(
-  //   @param.path.number('id') id: number,
-  //   @requestBody() user: User,
-  // ): Promise<void> {
-  //   await this.userRepository.replaceById(id, user);
-  // }
 
   @del('/users/{id}')
   @response(204, {
     description: 'User DELETE success',
   })
-  @authenticate('jwt')
-  @authorize({
-    allowedRoles: ['ADMIN'],
-  })
+  // @authenticate('jwt')
+  // @authorize({
+  //   allowedRoles: ['ADMIN'],
+  // })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.userRepository.deleteById(id);
   }
-
-  // @post('/login')
-  // @response(200, {
-  //   description: 'User model instance',
-  //   content: {'application/json': {schema: getModelSchemaRef(User)}},
-  // })
-  // async login(
-  //   @requestBody({
-  //     content: {
-  //       'application/json': {
-  //         schema: getModelSchemaRef(User, {
-  //           title: 'NewUser',
-  //           exclude: ['id'],
-  //         }),
-  //       },
-  //     },
-  //   })
-  //   user: Omit<User, 'id'>,
-  // ): Promise<any> {
-  //   try {
-  //     const userDB: User | null = await this.userRepository.findOne({
-  //       where: {username: user.username},
-  //     });
-
-  //     if (userDB) {
-  //       const checkPwd: boolean = await this.bcrypt.compare(
-  //         user.pwd,
-  //         userDB.pwd,
-  //       );
-
-  //       if (checkPwd) {
-  //         return userDB;
-  //       } else {
-  //         return `User or password is not correct`;
-  //       }
-  //     } else {
-  //       return `Username or pwd is not right`;
-  //     }
-  //   } catch (e) {
-  //     return e;
-  //   }
-  // }
 
   @post('/login', {
     responses: {
@@ -273,7 +233,7 @@ export class UserController {
   @authorize.skip()
   async signIn(
     @requestBody(CredentialsRequestBody) credentials: Credentials,
-  ): Promise<{token: string}> {
+  ): Promise<ResponseUser> {
     // ensure the user exists, and the password is correct
     const user = await this.userService.verifyCredentials(credentials);
     // convert a User object into a UserProfile object (reduced set of properties)
@@ -281,6 +241,62 @@ export class UserController {
     // console.log(userProfile);
     // create a JSON Web Token based on the user profile
     const token = await this.jwtService.generateToken(userProfile);
-    return {token};
+    console.log(userProfile);
+    let role = await this.roleRepository.findById(userProfile.roleId!);
+
+    return {
+      id: userProfile.id,
+      username: userProfile.username,
+      role: role.name,
+      createdOn: userProfile.createdOn,
+      token: token,
+    };
+  }
+
+  // @authenticate('jwt')
+  @get('/whoAmI', {
+    responses: {
+      '200': {
+        description: 'Return current user',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'string',
+            },
+          },
+        },
+      },
+    },
+  })
+  async whoAmI(
+    @inject(SecurityBindings.USER)
+    currentUserProfile: MyUserProfile,
+  ) {
+    console.log('CURRENT USER: ', currentUserProfile);
+    return currentUserProfile;
+  }
+
+  @patch('/changePWD')
+  @response(204, {
+    description: 'User PATCH success',
+  })
+  @authenticate('jwt')
+  async changePasswordById(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(UserChangePwdRequest, {partial: true}),
+        },
+      },
+    })
+    user: UserChangePwdRequest,
+  ): Promise<void> {
+    const currentUser = await this.getCurrentUser();
+    console.log(currentUser);
+
+    if (!currentUser) {
+      throw new HttpErrors[401]('User not found');
+    }
+    this.userService.ChangePassword(currentUser.user_id, user.pwd, user.newPwd);
   }
 }

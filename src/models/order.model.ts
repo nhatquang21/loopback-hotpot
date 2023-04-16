@@ -54,6 +54,9 @@ export class Order extends Entity {
   @hasMany(() => Dish, {through: {model: () => OrderDishes}})
   dishes: Dish[];
 
+  @hasMany(() => OrderDishes, {keyTo: 'orderId'})
+  orderDishes: OrderDishes[];
+
   @hasOne(() => Employee, {
     keyFrom: 'employeeId',
     keyTo: 'id',

@@ -19,9 +19,11 @@ export class MyAuthorizationProvider implements Provider<Authorizer> {
     context: AuthorizationContext,
     metadata: AuthorizationMetadata,
   ) {
+    console.log('contextPrincipal', context);
     if (context.principals.length <= 0) {
       return AuthorizationDecision.DENY;
     }
+    console.log(context.principals[0]);
     let idRole = context.principals[0].role;
     let clientRole =
       idRole == 1
@@ -31,7 +33,8 @@ export class MyAuthorizationProvider implements Provider<Authorizer> {
         : idRole == 3
         ? 'Customer'
         : null;
-    console.log(clientRole);
+
+    console.log('check', clientRole);
     if (!clientRole) {
       return AuthorizationDecision.DENY;
     }
@@ -41,7 +44,11 @@ export class MyAuthorizationProvider implements Provider<Authorizer> {
     if (!allowedRoles) {
       return AuthorizationDecision.DENY;
     }
-
+    console.log(
+      allowedRoles?.includes(clientRole)
+        ? AuthorizationDecision.ALLOW
+        : AuthorizationDecision.DENY,
+    );
     return allowedRoles?.includes(clientRole)
       ? AuthorizationDecision.ALLOW
       : AuthorizationDecision.DENY;

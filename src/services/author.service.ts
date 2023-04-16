@@ -10,10 +10,13 @@ export async function basicAuthorization(
 ) {
   const idFromRequest = await context.invocationContext.args[0];
 
+  console.log('checkBasic', idFromRequest);
+  console.log(context.principals);
   let currentUserId: number;
   if (context.principals.length <= 0) {
     return AuthorizationDecision.DENY;
   }
+
   currentUserId = context.principals[0].user_id;
   if (context.principals[0].role == 1) {
     return AuthorizationDecision.ABSTAIN;

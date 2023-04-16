@@ -1,4 +1,5 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, hasOne, model, property} from '@loopback/repository';
+import {Role} from './role.model';
 
 @model({
   settings: {
@@ -62,6 +63,12 @@ export class User extends Entity {
   })
   updatedOn?: string;
 
+  @hasOne(() => Role, {
+    keyFrom: 'roleId',
+    keyTo: 'id',
+  })
+  role: Role;
+
   @property({
     type: 'number',
     postgresql: {
@@ -74,6 +81,22 @@ export class User extends Entity {
   constructor(data?: Partial<User>) {
     super(data);
   }
+}
+
+export class UserChangePwdRequest extends User {
+  @property({
+    type: 'string',
+    required: true,
+    postgresql: {
+      columnName: 'password',
+      datatype: 'character varying',
+    },
+    jsonSchema: {
+      maxLength: 16,
+      minLength: 4,
+    },
+  })
+  newPwd: string;
 }
 
 export interface UserRelations {

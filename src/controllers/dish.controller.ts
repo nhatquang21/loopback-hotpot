@@ -1,4 +1,5 @@
 import {authenticate} from '@loopback/authentication';
+import {authorize} from '@loopback/authorization';
 import {
   Count,
   CountSchema,
@@ -14,7 +15,6 @@ import {
   param,
   patch,
   post,
-  put,
   requestBody,
   response,
 } from '@loopback/rest';
@@ -30,11 +30,14 @@ export class DishController {
     public orderDishesRepository: OrderDishesRepository,
   ) {}
 
-  @authenticate('jwt')
   @post('/dishes')
   @response(200, {
     description: 'Dish model instance',
     content: {'application/json': {schema: getModelSchemaRef(Dish)}},
+  })
+  @authenticate('jwt')
+  @authorize({
+    allowedRoles: ['ADMIN', 'Employees'],
   })
   async create(
     @requestBody({
@@ -77,26 +80,6 @@ export class DishController {
     return this.dishRepository.find(filter);
   }
 
-  // @authenticate('jwt')
-  // @patch('/dishes')
-  // @response(200, {
-  //   description: 'Dish PATCH success count',
-  //   content: {'application/json': {schema: CountSchema}},
-  // })
-  // async updateAll(
-  //   @requestBody({
-  //     content: {
-  //       'application/json': {
-  //         schema: getModelSchemaRef(Dish, {partial: true}),
-  //       },
-  //     },
-  //   })
-  //   dish: Dish,
-  //   @param.where(Dish) where?: Where<Dish>,
-  // ): Promise<Count> {
-  //   return this.dishRepository.updateAll(dish, where);
-  // }
-
   @get('/dishes/{id}')
   @response(200, {
     description: 'Dish model instance',
@@ -113,10 +96,13 @@ export class DishController {
     return this.dishRepository.findById(id, filter);
   }
 
-  @authenticate('jwt')
   @patch('/dishes/{id}')
   @response(204, {
     description: 'Dish PATCH success',
+  })
+  @authenticate('jwt')
+  @authorize({
+    allowedRoles: ['ADMIN', 'Employees'],
   })
   async updateById(
     @param.path.number('id') id: number,
@@ -132,22 +118,25 @@ export class DishController {
     await this.dishRepository.updateById(id, dish);
   }
 
-  @authenticate('jwt')
-  @put('/dishes/{id}')
-  @response(204, {
-    description: 'Dish PUT success',
-  })
-  async replaceById(
-    @param.path.number('id') id: number,
-    @requestBody() dish: Dish,
-  ): Promise<void> {
-    await this.dishRepository.replaceById(id, dish);
-  }
+  // @authenticate('jwt')
+  // @put('/dishes/{id}')
+  // @response(204, {
+  //   description: 'Dish PUT success',
+  // })
+  // async replaceById(
+  //   @param.path.number('id') id: number,
+  //   @requestBody() dish: Dish,
+  // ): Promise<void> {
+  //   await this.dishRepository.replaceById(id, dish);
+  // }
 
-  @authenticate('jwt')
   @del('/dishes/{id}')
   @response(204, {
     description: 'Dish DELETE success',
+  })
+  @authenticate('jwt')
+  @authorize({
+    allowedRoles: ['ADMIN', 'Employees'],
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.dishRepository.deleteById(id);

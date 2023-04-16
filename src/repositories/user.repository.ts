@@ -1,8 +1,13 @@
-import {inject} from '@loopback/core';
-import {DefaultCrudRepository} from '@loopback/repository';
+import {Getter, inject} from '@loopback/core';
+import {
+  DefaultCrudRepository,
+  repository,
+  HasOneRepositoryFactory,
+} from '@loopback/repository';
 import moment from 'moment';
 import {DbDataSource} from '../datasources';
-import {User, UserRelations} from '../models';
+import {Role, User, UserRelations} from '../models';
+import {RoleRepository} from './role.repository';
 export class UserRepository extends DefaultCrudRepository<
   User,
   typeof User.prototype.id,
@@ -10,9 +15,22 @@ export class UserRepository extends DefaultCrudRepository<
 > {
   bcrypt = require('bcrypt');
   saltRounds = 10;
-  constructor(@inject('datasources.db') dataSource: DbDataSource) {
+
+  public readonly role: HasOneRepositoryFactory<Role, typeof Role.prototype.id>;
+
+  constructor(
+    @inject('datasources.db') dataSource: DbDataSource,
+    @repository.getter('RoleRepository')
+    protected roleRepositoryGetter: Getter<RoleRepository>,
+  ) {
     super(User, dataSource);
+    this.role = this.createHasOneRepositoryFactoryFor(
+      'role',
+      roleRepositoryGetter,
+    );
+    this.registerInclusionResolver('role', this.role.inclusionResolver);
   }
+
   async createFromEmployee(user: User) {
     user.pwd = await this.bcrypt.hash(user.pwd, this.saltRounds);
     user.createdOn = moment().toISOString();

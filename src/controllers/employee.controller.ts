@@ -1,4 +1,3 @@
-import {authenticate} from '@loopback/authentication/dist/decorators/authenticate.decorator';
 import {
   Count,
   CountSchema,
@@ -22,7 +21,7 @@ import {Employee, EmployeeRequest, User} from '../models';
 import {EmployeeRepository} from '../repositories';
 import {UserRepository} from './../repositories/user.repository';
 
-@authenticate('jwt')
+// @authenticate('jwt')
 export class EmployeeController {
   bcrypt = require('bcrypt');
   saltRounds = 10;
