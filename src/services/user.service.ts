@@ -70,7 +70,7 @@ export class CustomUserService implements UserService<User, Credentials> {
     const passwordMatched = await bcrypt.compare(password, user.pwd);
     console.log(passwordMatched);
     if (!passwordMatched) {
-      return HttpErrors[401]("Password doesn't match");
+      throw new HttpErrors.Unauthorized(`Password doesn't match`);
     } else {
       const salt = await bcrypt.genSalt(10);
       const hash = await bcrypt.hash(newPassword, salt);
@@ -78,10 +78,6 @@ export class CustomUserService implements UserService<User, Credentials> {
       user.pwd = hash;
       console.log(user);
       await this.userRepository.updateById(id, user);
-      return {
-        message: 'Password changed successfully',
-        status: 200,
-      };
     }
   }
 }

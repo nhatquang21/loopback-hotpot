@@ -189,13 +189,14 @@ export class UserController {
       },
     })
     user: User,
-  ): Promise<void> {
+  ): Promise<any> {
     if (user.pwd) {
       user.pwd = await this.bcrypt.hash(user.pwd, this.saltRounds);
     }
-    console.log(user);
 
     await this.userRepository.updateById(id, user);
+    let returnUser = await this.userRepository.findById(id);
+    return returnUser;
   }
 
   @del('/users/{id}')
@@ -297,6 +298,10 @@ export class UserController {
     if (!currentUser) {
       throw new HttpErrors[401]('User not found');
     }
-    this.userService.ChangePassword(currentUser.user_id, user.pwd, user.newPwd);
+    return this.userService.ChangePassword(
+      currentUser.user_id,
+      user.pwd,
+      user.newPwd,
+    );
   }
 }

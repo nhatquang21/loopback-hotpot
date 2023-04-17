@@ -114,8 +114,10 @@ export class DishController {
       },
     })
     dish: Dish,
-  ): Promise<void> {
+  ): Promise<any> {
     await this.dishRepository.updateById(id, dish);
+    let returnDish = this.dishRepository.findById(id);
+    return returnDish;
   }
 
   // @authenticate('jwt')
